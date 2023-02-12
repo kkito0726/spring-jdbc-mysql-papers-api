@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PaperController {
 
-  private static final String BASE_URL = "/api/v1";
+  private static final String BASE_URL = "/api/v1/papers";
   private final PaperService paperService;
 
   @GetMapping("")
