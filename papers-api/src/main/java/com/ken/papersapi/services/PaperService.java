@@ -31,7 +31,6 @@ public class PaperService {
 
   public Paper findByPaperId(UUID paperId) {
     final String query = "SELECT * from paper WHERE paper_id=?";
-    System.out.println(paperId.toString());
     List<Paper> papers = jdbcTemplate.query(
       query,
       new BeanPropertyRowMapper<>(Paper.class),
@@ -45,7 +44,7 @@ public class PaperService {
     final String query = "UPDATE paper SET title=?, comment=? WHERE paper_id=?";
     jdbcTemplate.update(
       query,
-      paper.getComment(),
+      paper.getTitle(),
       paper.getComment(),
       paperId.toString()
     );
