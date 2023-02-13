@@ -1,5 +1,6 @@
 package com.ken.papersapi.services;
 
+import com.ken.papersapi.dtos.UpdatePaperDto;
 import com.ken.papersapi.models.Paper;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,7 +20,7 @@ public class PaperService {
   private JdbcTemplate jdbcTemplate;
 
   public List<Paper> findAll() {
-    final String query = "SELECT * from paper";
+    final String query = "SELECT * from paper WHERE deleted_at is NULL";
     List<Paper> papers = jdbcTemplate.query(
       query,
       new BeanPropertyRowMapper<>(Paper.class)
@@ -28,13 +29,32 @@ public class PaperService {
     return papers;
   }
 
-  // public Paper findByPaperId(UUID paperId) {
-  //   final String query = "SELECT * from paper WHERE paper_id=" + paperId;
-  //   Paper paper = jdbcTemplate.query(
-  //     query,
-  //     new BeanPropertyRowMapper<>(Paper.class).getMappedClass()
-  //   );
-  // }
+  public Paper findByPaperId(UUID paperId) {
+    final String query = "SELECT * from paper WHERE paper_id=?";
+    System.out.println(paperId.toString());
+    Paper paper = jdbcTemplate.queryForObject(
+      query,
+      new BeanPropertyRowMapper<>(Paper.class).getMappedClass(),
+      paperId.toString()
+    );
+
+    return paper;
+  }
+
+  public void updateByPaperId(UpdatePaperDto paper, UUID paperId) {
+    final String query = "UPDATE paper SET title=?, comment=? WHERE paper_id=?";
+    jdbcTemplate.update(
+      query,
+      paper.getComment(),
+      paper.getComment(),
+      paperId.toString()
+    );
+  }
+
+  public void delete(UUID paperId) {
+    final String query = "UPDATE paper SET deleted_at=? WHERE paper_id=?";
+    jdbcTemplate.update(query, LocalDateTime.now(), paperId.toString());
+  }
 
   public Paper save(Paper paper) {
     onCreatedPaper(paper);
