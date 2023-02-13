@@ -1,6 +1,9 @@
 CREATE TABLE IF NOT EXISTS paper (
-  id INTEGER NOT NULL AUTO_INCREMENT,
+  no INTEGER NOT NULL AUTO_INCREMENT,
+  paper_id VARCHAR(256),
   title VARCHAR(256),
   comment VARCHAR(256),
-  PRIMARY KEY (id)
+  created_at DATETIME,
+  deleted_at DATETIME,
+  PRIMARY KEY (no)
 )
