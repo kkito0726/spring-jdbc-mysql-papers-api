@@ -32,13 +32,13 @@ public class PaperService {
   public Paper findByPaperId(UUID paperId) {
     final String query = "SELECT * from paper WHERE paper_id=?";
     System.out.println(paperId.toString());
-    Paper paper = jdbcTemplate.queryForObject(
+    List<Paper> papers = jdbcTemplate.query(
       query,
-      new BeanPropertyRowMapper<>(Paper.class).getMappedClass(),
+      new BeanPropertyRowMapper<>(Paper.class),
       paperId.toString()
     );
 
-    return paper;
+    return papers.get(0);
   }
 
   public void updateByPaperId(UpdatePaperDto paper, UUID paperId) {
