@@ -20,7 +20,7 @@ public class PaperService {
   private JdbcTemplate jdbcTemplate;
 
   public List<Paper> findAll() {
-    final String query = "SELECT * from paper WHERE deleted_at is NULL";
+    final String query = "SELECT * from papers WHERE deleted_at is NULL";
     List<Paper> papers = jdbcTemplate.query(
       query,
       new BeanPropertyRowMapper<>(Paper.class)
@@ -30,7 +30,7 @@ public class PaperService {
   }
 
   public Paper findByPaperId(UUID paperId) {
-    final String query = "SELECT * from paper WHERE paper_id=?";
+    final String query = "SELECT * from papers WHERE paper_id=?";
     List<Paper> papers = jdbcTemplate.query(
       query,
       new BeanPropertyRowMapper<>(Paper.class),
@@ -41,7 +41,8 @@ public class PaperService {
   }
 
   public void updateByPaperId(UpdatePaperDto paper, UUID paperId) {
-    final String query = "UPDATE paper SET title=?, comment=? WHERE paper_id=?";
+    final String query =
+      "UPDATE papers SET title=?, comment=? WHERE paper_id=?";
     jdbcTemplate.update(
       query,
       paper.getTitle(),
@@ -51,7 +52,7 @@ public class PaperService {
   }
 
   public void delete(UUID paperId) {
-    final String query = "UPDATE paper SET deleted_at=? WHERE paper_id=?";
+    final String query = "UPDATE papers SET deleted_at=? WHERE paper_id=?";
     jdbcTemplate.update(query, LocalDateTime.now(), paperId.toString());
   }
 
@@ -59,7 +60,7 @@ public class PaperService {
     onCreatedPaper(paper);
     SqlParameterSource param = new BeanPropertySqlParameterSource(paper);
     SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
-      .withTableName("paper")
+      .withTableName("papers")
       .usingGeneratedKeyColumns("id");
 
     Number key = insert.executeAndReturnKey(param);
