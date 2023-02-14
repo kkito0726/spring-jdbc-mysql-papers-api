@@ -38,6 +38,15 @@ public class PaperController {
     return ResponseEntity.ok(paper);
   }
 
+  @GetMapping("users/{userId}")
+  public ResponseEntity<List<Paper>> getPapersByUserId(
+    @PathVariable UUID userId
+  ) {
+    List<Paper> papers = paperService.findByUserId(userId);
+
+    return ResponseEntity.ok(papers);
+  }
+
   @PatchMapping("/{paperId}")
   public ResponseEntity<Object> updatePaper(
     @RequestBody UpdatePaperDto dto,

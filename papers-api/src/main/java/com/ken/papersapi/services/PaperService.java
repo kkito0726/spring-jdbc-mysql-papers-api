@@ -40,6 +40,17 @@ public class PaperService {
     return papers.get(0);
   }
 
+  public List<Paper> findByUserId(UUID userId) {
+    final String query = "SELECT * from papers WHERE user_id=?";
+    List<Paper> papers = jdbcTemplate.query(
+      query,
+      new BeanPropertyRowMapper<>(Paper.class),
+      userId.toString()
+    );
+
+    return papers;
+  }
+
   public void updateByPaperId(UpdatePaperDto paper, UUID paperId) {
     final String query =
       "UPDATE papers SET title=?, comment=? WHERE paper_id=?";

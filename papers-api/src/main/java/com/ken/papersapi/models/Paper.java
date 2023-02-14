@@ -17,6 +17,7 @@ public class Paper {
 
   private String title;
   private String comment;
+  private UUID userId;
   private LocalDateTime createdAt;
   private LocalDateTime deletedAt;
 }
