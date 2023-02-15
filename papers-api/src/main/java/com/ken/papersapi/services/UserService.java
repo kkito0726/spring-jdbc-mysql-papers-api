@@ -1,11 +1,13 @@
 package com.ken.papersapi.services;
 
 import com.ken.papersapi.dtos.UpdateUserDto;
+import com.ken.papersapi.dtos.UserDto;
+import com.ken.papersapi.mappers.UserMapper;
 import com.ken.papersapi.models.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -14,22 +16,27 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
 
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
+  private final JdbcTemplate jdbcTemplate;
+  private final UserMapper _userMapper;
 
-  public List<User> findAll() {
+  public List<UserDto> findAll() {
     final String query = "SELECT * from users WHERE deleted_at is NULL";
     List<User> users = jdbcTemplate.query(
       query,
       new BeanPropertyRowMapper<>(User.class)
     );
+    List<UserDto> userDtos = users
+      .stream()
+      .map(userItem -> _userMapper.toDto(userItem))
+      .toList();
 
-    return users;
+    return userDtos;
   }
 
-  public User findByUserid(UUID userId) {
+  public UserDto findByUserid(UUID userId) {
     final String query = "SELECT * from users WHERE user_id=?";
     List<User> users = jdbcTemplate.query(
       query,
@@ -37,7 +44,7 @@ public class UserService {
       userId.toString()
     );
 
-    return users.get(0);
+    return _userMapper.toDto(users.get(0));
   }
 
   public void updateByUserId(UpdateUserDto dto, UUID userId) {
@@ -58,7 +65,7 @@ public class UserService {
     jdbcTemplate.update(query, LocalDateTime.now(), userId.toString());
   }
 
-  public User save(User user) {
+  public UserDto save(User user) {
     onCreateUser(user);
     SqlParameterSource param = new BeanPropertySqlParameterSource(user);
     SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
@@ -68,7 +75,7 @@ public class UserService {
     Number key = insert.executeAndReturnKey(param);
     user.setNo(key.hashCode());
 
-    return user;
+    return _userMapper.toDto(user);
   }
 
   public void onCreateUser(User user) {

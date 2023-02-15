@@ -1,6 +1,7 @@
 package com.ken.papersapi.controllers;
 
 import com.ken.papersapi.dtos.UpdateUserDto;
+import com.ken.papersapi.dtos.UserDto;
 import com.ken.papersapi.models.User;
 import com.ken.papersapi.services.UserService;
 import java.util.List;
@@ -25,20 +26,20 @@ public class UserController {
   private final UserService userService;
 
   @GetMapping("")
-  public ResponseEntity<List<User>> getUsers() {
-    List<User> users = userService.findAll();
+  public ResponseEntity<List<UserDto>> getUsers() {
+    List<UserDto> users = userService.findAll();
     return ResponseEntity.ok(users);
   }
 
   @GetMapping("/{userId}")
-  public ResponseEntity<User> getUser(@PathVariable UUID userId) {
-    User user = userService.findByUserid(userId);
+  public ResponseEntity<UserDto> getUser(@PathVariable UUID userId) {
+    UserDto user = userService.findByUserid(userId);
     return ResponseEntity.ok(user);
   }
 
   @PostMapping("")
-  public ResponseEntity<User> createUser(@RequestBody User user) {
-    User newUser = userService.save(user);
+  public ResponseEntity<UserDto> createUser(@RequestBody User user) {
+    UserDto newUser = userService.save(user);
     return ResponseEntity.ok(newUser);
   }
 

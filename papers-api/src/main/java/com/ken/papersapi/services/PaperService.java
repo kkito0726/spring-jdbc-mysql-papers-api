@@ -1,10 +1,13 @@
 package com.ken.papersapi.services;
 
+import com.ken.papersapi.dtos.PaperDto;
 import com.ken.papersapi.dtos.UpdatePaperDto;
+import com.ken.papersapi.mappers.PaperMapper;
 import com.ken.papersapi.models.Paper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,22 +17,29 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class PaperService {
 
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
-  public List<Paper> findAll() {
+  private final PaperMapper _paperMapper;
+
+  public List<PaperDto> findAll() {
     final String query = "SELECT * from papers WHERE deleted_at is NULL";
     List<Paper> papers = jdbcTemplate.query(
       query,
       new BeanPropertyRowMapper<>(Paper.class)
     );
+    List<PaperDto> paperDtos = papers
+      .stream()
+      .map(paperItem -> _paperMapper.toDto(paperItem))
+      .toList();
 
-    return papers;
+    return paperDtos;
   }
 
-  public Paper findByPaperId(UUID paperId) {
+  public PaperDto findByPaperId(UUID paperId) {
     final String query = "SELECT * from papers WHERE paper_id=?";
     List<Paper> papers = jdbcTemplate.query(
       query,
@@ -37,18 +47,22 @@ public class PaperService {
       paperId.toString()
     );
 
-    return papers.get(0);
+    return _paperMapper.toDto(papers.get(0));
   }
 
-  public List<Paper> findByUserId(UUID userId) {
+  public List<PaperDto> findByUserId(UUID userId) {
     final String query = "SELECT * from papers WHERE user_id=?";
     List<Paper> papers = jdbcTemplate.query(
       query,
       new BeanPropertyRowMapper<>(Paper.class),
       userId.toString()
     );
+    List<PaperDto> paperDtos = papers
+      .stream()
+      .map(paperItem -> _paperMapper.toDto(paperItem))
+      .toList();
 
-    return papers;
+    return paperDtos;
   }
 
   public void updateByPaperId(UpdatePaperDto paper, UUID paperId) {
@@ -67,7 +81,7 @@ public class PaperService {
     jdbcTemplate.update(query, LocalDateTime.now(), paperId.toString());
   }
 
-  public Paper save(Paper paper) {
+  public PaperDto save(Paper paper) {
     onCreatedPaper(paper);
     SqlParameterSource param = new BeanPropertySqlParameterSource(paper);
     SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
@@ -77,7 +91,7 @@ public class PaperService {
     Number key = insert.executeAndReturnKey(param);
     paper.setNo(key.hashCode());
 
-    return paper;
+    return _paperMapper.toDto(paper);
   }
 
   public void onCreatedPaper(Paper paper) {

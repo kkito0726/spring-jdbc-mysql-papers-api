@@ -1,5 +1,6 @@
 package com.ken.papersapi.controllers;
 
+import com.ken.papersapi.dtos.PaperDto;
 import com.ken.papersapi.dtos.UpdatePaperDto;
 import com.ken.papersapi.models.Paper;
 import com.ken.papersapi.services.PaperService;
@@ -25,24 +26,24 @@ public class PaperController {
   private final PaperService paperService;
 
   @GetMapping("")
-  public ResponseEntity<List<Paper>> getPapers() {
-    List<Paper> papers = paperService.findAll();
+  public ResponseEntity<List<PaperDto>> getPapers() {
+    List<PaperDto> papers = paperService.findAll();
 
     return ResponseEntity.ok(papers);
   }
 
   @GetMapping("/{paperId}")
-  public ResponseEntity<Paper> getPaper(@PathVariable UUID paperId) {
-    Paper paper = paperService.findByPaperId(paperId);
+  public ResponseEntity<PaperDto> getPaper(@PathVariable UUID paperId) {
+    PaperDto paper = paperService.findByPaperId(paperId);
 
     return ResponseEntity.ok(paper);
   }
 
   @GetMapping("users/{userId}")
-  public ResponseEntity<List<Paper>> getPapersByUserId(
+  public ResponseEntity<List<PaperDto>> getPapersByUserId(
     @PathVariable UUID userId
   ) {
-    List<Paper> papers = paperService.findByUserId(userId);
+    List<PaperDto> papers = paperService.findByUserId(userId);
 
     return ResponseEntity.ok(papers);
   }
@@ -65,8 +66,8 @@ public class PaperController {
   }
 
   @PostMapping("")
-  public ResponseEntity<Paper> createPaper(@RequestBody Paper paper) {
-    Paper newPaper = paperService.save(paper);
+  public ResponseEntity<PaperDto> createPaper(@RequestBody Paper paper) {
+    PaperDto newPaper = paperService.save(paper);
 
     return ResponseEntity.ok(newPaper);
   }
