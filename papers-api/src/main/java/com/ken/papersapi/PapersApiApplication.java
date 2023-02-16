@@ -6,8 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class PapersApiApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PapersApiApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(PapersApiApplication.class, args);
+  }
 }
