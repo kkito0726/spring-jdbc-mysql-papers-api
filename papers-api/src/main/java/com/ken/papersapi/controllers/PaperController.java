@@ -2,6 +2,7 @@ package com.ken.papersapi.controllers;
 
 import com.ken.papersapi.dtos.PaperDto;
 import com.ken.papersapi.dtos.UpdatePaperDto;
+import com.ken.papersapi.models.Like;
 import com.ken.papersapi.models.Paper;
 import com.ken.papersapi.services.PaperService;
 import java.util.List;
@@ -70,5 +71,27 @@ public class PaperController {
     PaperDto newPaper = paperService.save(paper);
 
     return ResponseEntity.ok(newPaper);
+  }
+
+  @PostMapping("/like")
+  public ResponseEntity<Object> like(@RequestBody Like like) {
+    paperService.like(like);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/like/by_paper_id/{paperId}")
+  public ResponseEntity<List<Like>> getLikeByUserId(
+    @PathVariable UUID paperId
+  ) {
+    List<Like> likes = paperService.getLikesByPaperId(paperId);
+    return ResponseEntity.ok(likes);
+  }
+
+  @GetMapping("/like/by_user_id/{userId}")
+  public ResponseEntity<List<Like>> getLikesByUserId(
+    @PathVariable UUID userId
+  ) {
+    List<Like> likes = paperService.getLikesByUserId(userId);
+    return ResponseEntity.ok(likes);
   }
 }

@@ -3,6 +3,7 @@ package com.ken.papersapi.services;
 import com.ken.papersapi.dtos.PaperDto;
 import com.ken.papersapi.dtos.UpdatePaperDto;
 import com.ken.papersapi.mappers.PaperMapper;
+import com.ken.papersapi.models.Like;
 import com.ken.papersapi.models.Paper;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -79,6 +80,35 @@ public class PaperService {
   public void delete(UUID paperId) {
     final String query = "UPDATE papers SET deleted_at=? WHERE paper_id=?";
     jdbcTemplate.update(query, LocalDateTime.now(), paperId.toString());
+  }
+
+  public void like(Like like) {
+    SqlParameterSource pram = new BeanPropertySqlParameterSource(like);
+    SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
+      .withTableName("likes");
+    insert.execute(pram);
+  }
+
+  public List<Like> getLikesByPaperId(UUID paperId) {
+    final String query = "SELECT * FROM likes WHERE paper_id=?";
+    List<Like> likes = jdbcTemplate.query(
+      query,
+      new BeanPropertyRowMapper<>(),
+      paperId.toString()
+    );
+
+    return likes;
+  }
+
+  public List<Like> getLikesByUserId(UUID userId) {
+    final String query = "SELECT * FROM likes WHERE paper_id=?";
+    List<Like> likes = jdbcTemplate.query(
+      query,
+      new BeanPropertyRowMapper<>(),
+      userId.toString()
+    );
+
+    return likes;
   }
 
   public PaperDto save(Paper paper) {
