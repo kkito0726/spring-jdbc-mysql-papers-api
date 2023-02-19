@@ -3,6 +3,7 @@ package com.ken.papersapi.services;
 import com.ken.papersapi.dtos.UpdateUserDto;
 import com.ken.papersapi.dtos.UserDto;
 import com.ken.papersapi.mappers.UserMapper;
+import com.ken.papersapi.models.Follow;
 import com.ken.papersapi.models.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -63,6 +64,33 @@ public class UserService {
   public void delete(UUID userId) {
     final String query = "UPDATE users SET deleted_at=? WHERE user_id=?";
     jdbcTemplate.update(query, LocalDateTime.now(), userId.toString());
+  }
+
+  public void follow(Follow follow) {
+    SqlParameterSource param = new BeanPropertySqlParameterSource(follow);
+    SimpleJdbcInsert insert = new SimpleJdbcInsert(jdbcTemplate)
+      .withTableName("follows");
+    insert.execute(param);
+  }
+
+  public List<Follow> getFollowsByFollowingUserId(UUID followingUserId) {
+    final String query = "SELECT * FROM follows WHERE following_user_id=?";
+    List<Follow> follows = jdbcTemplate.query(
+      query,
+      new BeanPropertyRowMapper<>(),
+      followingUserId.toString()
+    );
+    return follows;
+  }
+
+  public List<Follow> getFollowsByFollowedUserId(UUID followedUserId) {
+    final String query = "SELECT * FROM follows WHERE followed_user_id=?";
+    List<Follow> follows = jdbcTemplate.query(
+      query,
+      new BeanPropertyRowMapper<>(),
+      followedUserId.toString()
+    );
+    return follows;
   }
 
   public UserDto save(User user) {

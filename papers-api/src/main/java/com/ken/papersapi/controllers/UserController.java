@@ -2,6 +2,7 @@ package com.ken.papersapi.controllers;
 
 import com.ken.papersapi.dtos.UpdateUserDto;
 import com.ken.papersapi.dtos.UserDto;
+import com.ken.papersapi.models.Follow;
 import com.ken.papersapi.models.User;
 import com.ken.papersapi.services.UserService;
 import java.util.List;
@@ -56,5 +57,31 @@ public class UserController {
   public ResponseEntity<Object> deleteUser(@PathVariable UUID userId) {
     userService.delete(userId);
     return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/follow")
+  public ResponseEntity<Object> follow(@RequestBody Follow follow) {
+    userService.follow(follow);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/follow/by_following_id/{followingUserId}")
+  public ResponseEntity<List<Follow>> getFollowerByFollowing(
+    @PathVariable UUID followingUserId
+  ) {
+    List<Follow> followers = userService.getFollowsByFollowingUserId(
+      followingUserId
+    );
+    return ResponseEntity.ok(followers);
+  }
+
+  @GetMapping("/follow/by_followed_id/{followedUserId}")
+  public ResponseEntity<List<Follow>> getFollowersByFollowedUserId(
+    @PathVariable UUID followedUserId
+  ) {
+    List<Follow> followers = userService.getFollowsByFollowedUserId(
+      followedUserId
+    );
+    return ResponseEntity.ok(followers);
   }
 }
